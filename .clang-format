@@ -1,0 +1,41 @@
+# Use Google style as the base
+BasedOnStyle: Google
+
+# Align multi-line macro backslashes
+AlignEscapedNewlines: Left
+
+# Keep function definitions compact
+AllowShortFunctionsOnASingleLine: Empty
+
+# Control indentation width
+IndentWidth: 2
+ContinuationIndentWidth: 2
+TabWidth: 2
+
+# Control spaces around operators and keywords
+SpacesInParentheses: false
+SpaceBeforeParens: ControlStatements
+
+# Keep macros formatted cleanly
+IndentPPDirectives: AfterHash
+
+# Wrap long lines (0 = disable wrapping)
+ColumnLimit: 0
+
+# Keep pointer/reference aligned to type or variable
+PointerAlignment: Left  # Options: Left, Right, Middle
+
+# Format includes (alphabetically sorting them)
+SortIncludes: Never
+
+# Align consecutive assignments (useful for macros)
+AlignConsecutiveAssignments: true
+
+# Align function parameters when they wrap onto a new line
+AlignAfterOpenBracket: BlockIndent
+
+# Don't break long strings into multiple lines
+BreakStringLiterals: false
+
+NamespaceIndentation: All
+FixNamespaceComments: false

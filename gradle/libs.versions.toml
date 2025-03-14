@@ -1,0 +1,11 @@
+[versions]
+agp = "8.8.0"
+xdl = "2.2.0"
+aih = "1.0.10"
+
+[libraries]
+xdl = { group = "io.github.hexhacking", name = "xdl", version.ref = "xdl" }
+aih = { group = "com.bytedance.android", name = "shadowhook", version.ref = "aih" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
