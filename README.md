@@ -23,6 +23,7 @@ Output module file is located at `module/build/outputs/${MODULE_NAME}.zip`.
 
 ## Credits
 
+- zygisk-module-sample: https://github.com/topjohnwu/zygisk-module-sample
 - xDL: https://github.com/hexhacking/xDL
 - ShadowHook: https://github.com/bytedance/android-inline-hook
 - UnityResolve.hpp: https://github.com/issuimo/UnityResolve.hpp
