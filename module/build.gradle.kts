@@ -55,7 +55,7 @@ android {
   }
 
   packaging {
-    jniLibs.pickFirsts += listOf("**/libxdl.so", "**/libshadowhook.so")
+    jniLibs.pickFirsts += listOf("**/libxdl.so", "**/libshadowhook.so", "**/libshadowhook_nothing.so")
   }
 }
 
