@@ -11,8 +11,17 @@ plugins {
 // "x86"
 val buildArch = "arm64-v8a"
 
+// Gradle properties
+val moduleId = project.findProperty("module.id")?.toString() ?: ""
+val moduleName = project.findProperty("module.name")?.toString() ?: ""
+val moduleLibName = project.findProperty("module.libName")?.toString() ?: ""
+val moduleVersion = project.findProperty("module.version")?.toString() ?: ""
+val moduleVersionCode = project.findProperty("module.versionCode")?.toString() ?: ""
+val moduleAuthor = project.findProperty("module.author")?.toString() ?: ""
+val moduleDescription = project.findProperty("module.description")?.toString() ?: ""
+
 android {
-  namespace = properties["module.id"].toString()
+  namespace = moduleId
   compileSdk = 37
   ndkVersion = "27.2.12479018"
 
@@ -26,8 +35,8 @@ android {
     externalNativeBuild {
       cmake {
         arguments += listOf(
-          "-DMOD_NAME:STRING=${properties["module.libName"]}",
-          "-DMOD_VERSION:STRING=${properties["module.version"]}",
+          "-DMOD_NAME:STRING=${moduleLibName}",
+          "-DMOD_VERSION:STRING=${moduleVersion}",
         )
       }
     }
@@ -50,38 +59,37 @@ android {
   }
 }
 
-afterEvaluate {
-  android.libraryVariants.forEach { variant ->
+androidComponents {
+  onVariants { variant ->
     val variantC = variant.name.capitalized()
-    val variantL = variant.name.lowercase()
     val targetDir = "${layout.buildDirectory.get()}/outputs/module"
 
-    tasks.register<Sync>("syncModuleFiles${variantC}") {
+    val syncTask = tasks.register<Sync>("syncModuleFiles${variantC}") {
       group = "Custom"
       description = "synchronize zygisk module files to target directory"
       dependsOn("strip${variantC}DebugSymbols")
       // shadowhook v1.1.1
-//      dependsOn("strip${variantC}AndroidTestDebugSymbols")
+      dependsOn("strip${variantC}AndroidTestDebugSymbols")
 
       into(targetDir)
       from("${rootDir}/module/template/module.prop") {
         expand(
           mapOf(
-            "id" to properties["module.id"],
-            "name" to properties["module.name"],
-            "version" to properties["module.version"],
-            "versionCode" to properties["module.versionCode"],
-            "author" to properties["module.author"],
-            "description" to properties["module.description"],
+            "id" to moduleId,
+            "name" to moduleName,
+            "version" to moduleVersion,
+            "versionCode" to moduleVersionCode,
+            "author" to moduleAuthor,
+            "description" to moduleDescription,
           )
         )
       }
       from("${rootDir}/module/template") { exclude("module.prop") }
-      from("${layout.buildDirectory.get()}/intermediates/stripped_native_libs/${variantL}/strip${variantC}DebugSymbols/out/lib")
+      from("${layout.buildDirectory.get()}/intermediates/stripped_native_libs/${variant.name}/strip${variantC}DebugSymbols/out/lib")
       // shadowhook v1.1.1
-//      from("${layout.buildDirectory.get()}/intermediates/stripped_native_libs/${variantL}AndroidTest/strip${variantC}AndroidTestDebugSymbols/out/lib") {
-//        include("${buildArch}/libshadowhook_nothing.so")
-//      }
+      from("${layout.buildDirectory.get()}/intermediates/stripped_native_libs/${variant.name}AndroidTest/strip${variantC}AndroidTestDebugSymbols/out/lib") {
+        include("${buildArch}/libshadowhook_nothing.so")
+      }
 
       doLast {
         file("${targetDir}/zygisk").mkdir()
@@ -89,7 +97,7 @@ afterEvaluate {
 
         fileTree("${targetDir}/${buildArch}").visit {
           if (this.isDirectory) return@visit
-          if (this.name == "lib${properties["module.libName"]}.so") {
+          if (this.name == "lib${moduleLibName}.so") {
             this.copyTo(file("${targetDir}/zygisk/${buildArch}.so"))
           } else {
             this.copyTo(file("${targetDir}/system/lib64/${this.name}"))
@@ -99,12 +107,12 @@ afterEvaluate {
       }
     }
 
-    tasks.register<Zip>("createModuleZip${variantC}") {
+    val zipTask = tasks.register<Zip>("createModuleZip${variantC}") {
       group = "Custom"
       description = "create zip file"
-      dependsOn("syncModuleFiles${variantC}")
+      dependsOn(syncTask)
       from(targetDir)
-      archiveFileName.set(properties["module.id"].toString().split(".").last() + ".zip")
+      archiveFileName.set(moduleId.split(".").last() + ".zip")
       destinationDirectory.set(file("${layout.buildDirectory.get()}/outputs"))
 
       doLast {
@@ -112,13 +120,15 @@ afterEvaluate {
       }
     }
 
-    tasks.register("postAssemble${variantC}") {
+    val postAssembleTask = tasks.register("postAssemble${variantC}") {
       group = "Custom"
       description = "create zygisk module zip"
-      dependsOn("createModuleZip${variantC}")
+      dependsOn(zipTask)
     }
 
-    variant.assembleProvider.get().finalizedBy("postAssemble${variantC}")
+    tasks.matching { it.name == "assemble${variantC}" }.configureEach {
+      finalizedBy(postAssembleTask)
+    }
   }
 }
 
