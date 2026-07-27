@@ -13,7 +13,7 @@ val buildArch = "arm64-v8a"
 
 android {
   namespace = properties["module.id"].toString()
-  compileSdk = 35
+  compileSdk = 37
   ndkVersion = "27.2.12479018"
 
   buildFeatures {
