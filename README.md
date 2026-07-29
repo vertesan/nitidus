@@ -2,8 +2,8 @@
 An Android il2cpp hooking module, driven by Zygisk.
 
 ## Prerequisites
-- Android Studio 2024.2.2 or later
-- A rooted arm64-v8a or armeabi-v7a Android device
+- Android Studio 2026.1.2 or later
+- A rooted arm64-v8a Android device
 - Your rooting solution has Zygisk support
 
 ## Usage
@@ -14,10 +14,10 @@ An Android il2cpp hooking module, driven by Zygisk.
 5. Build the project. If you are not using an Android Studio GUI run the following command in your terminal.
 
 ```bash
-./gradlew :app:assembleDebug
-# or
-./gradlew :app:assembleRelease
+./gradlew :module:assembleDebug
 ```
+
+Notice the building script used by this project is not able to build the module in "release" variant on its own, you will have to modify `module/build.gradle.kts` by yourself to make it possible.
 
 Output module file is located at `module/build/outputs/${MODULE_NAME}.zip`.
 
