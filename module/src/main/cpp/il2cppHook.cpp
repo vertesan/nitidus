@@ -7,16 +7,11 @@
 #include "shadowhook.h"
 #include "types.hpp"
 
-#define ASYNC_INIT 1
-
 namespace il2cppHook {
   using namespace types;
 
-  static void *il2cppHandle = nullptr;
-  static std::thread initThread;
+  static void *il2cppHandle_ = nullptr;
   static std::vector<void *> hookStubs = {};
-
-  static void initURHook();
 
 #define DEF_HOOK(N, R, A)         \
   static R(*N##Orig) A = nullptr; \
@@ -48,28 +43,9 @@ namespace il2cppHook {
   // ===================================================================
   // HINT: define hooks here
 
-  static void initURHook() {
-    UR::Init(il2cppHandle, UR::Mode::Il2Cpp);
-    UR::ThreadAttach();
-    LOGD("il2cpp thread attached, tid: %d", gettid());
-
+  void il2cppHookEntrypoint(void* il2cppHandle) {
+    il2cppHandle_ = il2cppHandle;
     // =================================================================
     // HINT: add hooks here
-  }
-
-  DEF_HOOK(il2cppInit, int, (const char *domain_name)) {
-    int ret = il2cppInitOrig(domain_name);
-    if (ASYNC_INIT) {
-      initThread = std::thread(initURHook);
-    } else {
-      initURHook();
-    }
-    return ret;
-  }
-
-  void HookIl2cpp(void *handle) {
-    il2cppHandle     = handle;
-    auto pIl2cppInit = reinterpret_cast<int (*)(const char *)>(dlsym(il2cppHandle, "il2cpp_init"));
-    ADD_HOOK(il2cppInit, pIl2cppInit)
   }
 }

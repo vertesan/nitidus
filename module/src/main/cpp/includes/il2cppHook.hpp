@@ -1,5 +1,5 @@
 #pragma once
 
 namespace il2cppHook {
-  void HookIl2cpp(void *handle);
+  void il2cppHookEntrypoint(void* il2cppHandle);
 }
