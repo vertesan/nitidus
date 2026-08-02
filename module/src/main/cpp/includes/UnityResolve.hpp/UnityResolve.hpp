@@ -89,7 +89,6 @@
 #define UNITY_CALLING_CONVENTION
 #endif
 
-#include "main.hpp"
 #include "xdl.h"
 
 class UnityResolve final {
@@ -422,16 +421,11 @@ class UnityResolve final {
     static auto Init(void *hmodule, const Mode mode = Mode::Mono) -> void {
         mode_ = mode;
         hmodule_ = hmodule;
-LOGE("anchor2");
         if (mode_ == Mode::Il2Cpp) {
-          std::this_thread::sleep_for(std::chrono::milliseconds(10));
             pDomain = Invoke<void *>("il2cpp_domain_get");
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
             while (!Invoke<bool>("il2cpp_is_vm_thread", nullptr))
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
             Invoke<void *>("il2cpp_thread_attach", pDomain);
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
             ForeachAssembly();
         } else {
             pDomain = Invoke<void *>("mono_get_root_domain");
