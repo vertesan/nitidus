@@ -21,4 +21,14 @@ namespace utils {
     ofs.close();
     return 0;
   }
+
+  std::string GetCsByteArrayString(URT::Array<URT::Byte>* csByteArray) {
+    std::vector<URT::Byte> byteVec = csByteArray->ToVector();
+    std::string hexStr;
+    hexStr.reserve(csByteArray->max_length * 2);
+    for (URT::Byte byt : byteVec) {
+      hexStr += std::format("{:02X}", byt);
+    }
+    return hexStr;
+  }
 }

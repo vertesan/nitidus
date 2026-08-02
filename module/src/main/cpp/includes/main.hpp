@@ -7,9 +7,9 @@
 // logcat tag for this module
 #define NTD_MODULE_NAME "nitidus"
 // if false, block game thread while il2cpp is still under initialization
-#define NTD_IL2CPP_ASYNC_INIT true
+#define NTD_IL2CPP_ASYNC_INIT false
 // enable/disable shadowhook debug log
-#define NTD_SHADOWHOOK_DEBUG_LOG true
+#define NTD_SHADOWHOOK_DEBUG_LOG false
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, NTD_MODULE_NAME, __VA_ARGS__)
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, NTD_MODULE_NAME, __VA_ARGS__)
